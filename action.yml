@@ -7,6 +7,21 @@ branding:
   color: "green"
 
 inputs:
+  lfs:
+    description: "Whether to pull lfs files"
+    required: true
+  clean:
+    description: 'Whether to execute `git clean -ffdx && git reset --hard HEAD` before fetching'
+    required: false
+    default: "false"
+  sparse-checkout:
+    description: >
+      Do a sparse checkout on given patterns.
+      Each pattern should be separated with new lines.
+    default: null
+  sparse-checkout-cone-mode:
+    description: >
+      Specifies whether to use cone-mode when doing a sparse checkout.
   include:
     description: "Explicitly include files for LFS"
     required: false
@@ -63,8 +78,11 @@ runs:
   using: "composite"
   steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@master
       with:
+        clean: ${{ inputs.clean }}
+        sparse-checkout: ${{ inputs.sparse-checkout }}
+        sparse-checkout-cone-mode: ${{ inputs.sparse-checkout-cone-mode }}
         fetch-depth: ${{ inputs.fetch-depth }}
         ref: ${{ inputs.ref }}
         repository: ${{ inputs.repository }}
